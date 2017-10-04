@@ -24,6 +24,10 @@ class MediaController extends Component {
     }
   }
 
+  shouldComponentUpdate() {
+    return false;
+  }
+
   setListenersToCurrentPlayer() {
     const currentMedia = this.refs._currentMediaEl;
 
@@ -132,11 +136,7 @@ class MediaController extends Component {
       src: track.mediaUrl,
       style: { 
         width: '100%',
-<<<<<<< HEAD
-        maxHeight: '90vh'
-=======
         maxHeight: '90vh',
->>>>>>> 9646890e0f7dc9b2c5d1466579611bbfbb54ff64
       },
       title: track.title,
     });
