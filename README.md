@@ -53,4 +53,4 @@ fetch('file.webm', { headers: { range: 'bytes=0-567139' } })
 });
 ```
 
-These buffers can be saved into a cache and then directly connected into a player accessing them. This would allow an application like this to not only fetch only the beginning of data, but to account for common user actions like when someone *quickly scrolling through the entire feed* to find something they're interested in. Abstracting this to a 'tracklist' at large would be a great library to have.
+These buffers can be saved into a cache and then be directly connected to by a player on-demand. This would allow this application to not only fetch only the beginning of data, but to account for common user actions that would otherwise slow the app (like when someone *quickly scrolling through the entire feed* to find something they're interested in). Abstracting this to a 'tracklist' at large would be a great library to have.
