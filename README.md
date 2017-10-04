@@ -1,7 +1,7 @@
 # anchor-tracklist
 Anchor tracklist coding challenge - by Thai Bui
 
-Live demo: https://anchor-tracklist.paperplane.io
+Live demo: http://anchor-tracklist.paperplane.io
 
 Given a JSON list of audio and video files to fetch, this webpage displays a single application page and plays the tracks in order, with the ability to play, pause, and skip by track. The title and forward/back buttons are located in the header. The media player plays both audio and video; the audio files are shown with the image of the audio whereas video is centered on the page.
 
