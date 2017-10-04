@@ -136,6 +136,7 @@ class MediaController extends Component {
       src: track.mediaUrl,
       style: { 
         width: '100%',
+        maxHeight: '90vh'
       },
       title: track.title,
     });
