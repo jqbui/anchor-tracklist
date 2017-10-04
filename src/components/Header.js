@@ -17,7 +17,10 @@ const HeaderWrapper = styled.div`
 const Title = styled.h1`
   font-size: 2vmax;
   font-family: Pangolin;
-  max-width: 40vh;
+  max-width: 80vh;
+  @media (max-width: 600px) {
+    max-width: 40vh;
+  }
   text-align: center;
   text-overflow: ellipsis;
 `;
