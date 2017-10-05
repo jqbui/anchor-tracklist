@@ -33,15 +33,11 @@ The rest of the application is a fairly standard React/Redux application. The Re
 
 I used the React library `styled-components` for inline stylings because [inline styles are in-fashion](https://speakerdeck.com/vjeux/react-css-in-js). (And because I 100% agree with the points outlined in that powerpoint)
 
-## Mistakes
+## What else to do
 
-I built the application with repsonsiveness in mind, but after testing, I mistakenly realized mobile browsers don't play HTML5 video players the same way desktop browsers do (the component is static, clicking to play an audio file opens a blank video in full screen). So using `<video>` for everything  wasn't the best idea. Autoplaying is also disabled on many device browsers due to data concerns. The page is otherwise responsive.
+My method of preloading is pretty inefficient: if the client decides to preload a file, it cannot determine the size of the file, and the request will continue until end, even if the user never accesses the data in the interface.
 
-Next steps would be to accept the fact the player needs to rerender for audio or video depending on the track, or some library that can do both with different stylings.
-
-My method of preloading is also pretty inefficient: if the client decides to preload a file, it cannot determine the size of the file, and the request will continue until end, even if the user never accesses the data in the interface.
-
-Thus the most interesting thing that I'd do is learning Manual Buffering (bottom of [this link](https://developers.google.com/web/fundamentals/media/fast-playback-with-video-preload)). This allows the client full control into the exact segments of the file to fetch by using a Range parameter in the request header:
+This application should use Manual Buffering (bottom of [this link](https://developers.google.com/web/fundamentals/media/fast-playback-with-video-preload)). This allows the client full control into the exact segments of the file to fetch by using a Range parameter in the request header:
 ```
 const sourceBuffer = mediaSource.addSourceBuffer('video/webm; codecs="vp9"');
 // Fetch beginning of the video by setting the Range HTTP request header.
