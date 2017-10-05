@@ -1,5 +1,5 @@
 {
-  "name": "anchor",
+  "name": "anchor-tracklist",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -85,6 +85,7 @@
       "node"
     ]
   },
+
   "babel": {
     "presets": [
       "react-app"
@@ -94,7 +95,6 @@
     "extends": "react-app"
   },
   "devDependencies": {
-    "redux-devtools-extension": "^2.13.2",
-    "video.js": "^6.2.7"
+    "redux-devtools-extension": "^2.13.2"
   }
 }

@@ -1,4 +1,4 @@
-import { Component, createElement } from 'react';
+import React, { Component, createElement } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { alertNextTrack, updateCurrentTrack } from '../actions/actions';
@@ -11,15 +11,19 @@ class MediaController extends Component {
     this._trackIdx = props.curTrackIdx;
     // Audio object to "cache" audio loads
     this._mediaCache = {};
+    this._currentMediaEl = null;
   }
 
   componentDidMount() {
+    this.switchPlayer(this._curTrack.mediaType);
+    this._currentMediaEl.src = this._curTrack.mediaUrl;
     this.setListenersToCurrentPlayer();
     this.play();
   }
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.curTrackIdx !== this._trackIdx) {
+      this._trackIdx = nextProps.curTrackIdx;
       this.jumpToTrack(nextProps.curTrackIdx);
     }
   }
@@ -28,8 +32,29 @@ class MediaController extends Component {
     return false;
   }
 
+  switchPlayer(mediaType) {
+    // Sets the source to the stated mediaType, and removes
+    // media from other tag
+    if (this._currentMediaEl) {
+      this.removeListenersToCurrentPlayer();
+    }
+    if (mediaType === 'audio') {
+      this._currentMediaEl = this.refs._audioMediaEl;
+      this.refs._videoMediaEl.src = '';
+      this.refs._videoMediaEl.title = '';
+      this.refs._videoMediaEl.style.display = 'none';
+    } else {
+      this._currentMediaEl = this.refs._videoMediaEl;
+      this.refs._audioMediaEl.src = null;
+      this.refs._audioMediaEl.title = null;
+      this.refs._audioMediaEl.style.display = 'none';
+    }
+    this._currentMediaEl.style.display = 'block';
+    this.setListenersToCurrentPlayer();
+  }
+
   setListenersToCurrentPlayer() {
-    const currentMedia = this.refs._currentMediaEl;
+    const currentMedia = this._currentMediaEl;
 
     currentMedia.addEventListener('play', this.onPlay);
     currentMedia.addEventListener('ended', this.onEnded);
@@ -37,7 +62,7 @@ class MediaController extends Component {
   }
 
   removeListenersToCurrentPlayer() {
-    const currentMedia = this.refs._currentMediaEl;
+    const currentMedia = this._currentMediaEl;
 
     currentMedia.removeEventListener('play', this.onPlay);
     currentMedia.removeEventListener('ended', this.onEnded);
@@ -45,7 +70,7 @@ class MediaController extends Component {
   }
 
   play() {
-    this.refs._currentMediaEl.play();
+    this._currentMediaEl.play();
   }
 
   onPlay = (e) => {
@@ -71,11 +96,13 @@ class MediaController extends Component {
     this.clearListenTrack();
     const tracks = this.props.tracks;
     const track = tracks[idx];
-
+    // Check if need to use other player
+    if (track.mediaType !== this._curTrack.mediaType) {
+      this.switchPlayer(track.mediaType)
+    } 
     // If we can go to next track, this will autoplay quicker via browser cache
     // Either way, need to change the src of the media component
-    this.refs._currentMediaEl.src = track.mediaUrl;
-
+    this._currentMediaEl.src = track.mediaUrl;
     // Update our fields
     this._curTrack = tracks[idx];
     this._trackIdx = idx;
@@ -99,8 +126,8 @@ class MediaController extends Component {
 
   setListenTrack = () => {
     this.listenTracker = setInterval(() => {
-      const { duration, currentTime } = this.refs._currentMediaEl;
-      if (!this._nextMedia && currentTime > (duration * .67)) {
+      const { duration, currentTime } = this._currentMediaEl;
+      if (!this._nextMedia && currentTime > (duration * .66)) {
         // prefetch data for src
         this.prefetchData();
         // dispatch an action to show update
@@ -118,6 +145,9 @@ class MediaController extends Component {
   }
 
   // There is no "Video()" constructor for video tags, so link preloading will do
+  // This acually probably is more efficient than audio
+  // I'm pretty sure you can just load these objects wherever in the dom
+  // Caching is better to try to implement but cross browser fxnality seems hard 
   createLinkForPreload(track) {
     const preloadLink = document.createElement("link");
     preloadLink.rel = "preload";
@@ -128,26 +158,25 @@ class MediaController extends Component {
   }
 
   // Using video element means we only have to use one element
-  createPlayerFromSource(track, refPointer) {
-    return  createElement('video', {
+  createPlayerFromSource(type, refPointer) {
+    return  createElement(type, {
       controls: true,
       preload: 'metadata',
       ref: refPointer,
-      src: track.mediaUrl,
       style: { 
         width: '100%',
         maxHeight: '90vh',
+        display: 'none',
       },
-      title: track.title,
     });
   };
 
   render() {
-    const { curTrackIdx, tracks } = this.props;
-    const curTrack = tracks[curTrackIdx];
-
     return (
-      this.createPlayerFromSource(curTrack, "_currentMediaEl")
+      <div>
+        {this.createPlayerFromSource('audio', "_audioMediaEl")}
+        {this.createPlayerFromSource('video', "_videoMediaEl")}
+      </div>
     );
   }
 }
